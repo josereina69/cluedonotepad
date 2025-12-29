@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cluedo Digital - Personajes Actualizados</title>
+    <title>Cluedo Digital - Versión Final</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 5px; }
         h2 { text-align: center; color: #ff4d4d; margin: 10px 0; font-size: 1.4em; text-transform: uppercase; }
@@ -15,7 +15,7 @@
         th { background-color: #2c3e50; color: white; font-size: 0.7em; }
         
         .item-name { 
-            text-align: left; font-weight: bold; width: 100px; 
+            text-align: left; font-weight: bold; width: 110px; 
             background: #252525; position: sticky; left: 0; 
             z-index: 3; border-right: 2px solid #444; padding-left: 8px;
             font-size: 0.85em;
@@ -87,7 +87,7 @@
 
     <div class="notes-area">
         <label style="display:block; margin-bottom: 5px; font-size: 0.85em; color: #999;">📝 REGISTRO DE PISTAS:</label>
-        <textarea rows="3" placeholder="Anotaciones extra aquí..."></textarea>
+        <textarea rows="3" placeholder="Ej: P2 no tiene el Puñal..."></textarea>
     </div>
 
     <button class="reset-btn" onclick="if(confirm('¿Reiniciar partida?')) window.location.reload()">REINICIAR TABLA</button>
@@ -96,7 +96,7 @@
         const secciones = [
             { nombre: "PERSONAJES", items: ["Prado", "Rubio", "Orquídea", "Celeste", "Mora", "Amapola"] },
             { nombre: "ARMAS", items: ["Candelabro", "Cuerda", "Puñal", "Pistola", "Tubería", "Herramienta"] },
-            { nombre: "HABITACIONES", items: ["Sala de Baile", "Sala de Billar", "Invernadero", "Comedor", "Vestíbulo", "Cocina", "Biblioteca", "Salón", "Estudio"] }
+            { nombre: "LUGARES", items: ["Sala de Baile", "Sala de Billar", "Invernadero", "Comedor", "Vestíbulo", "Cocina", "Biblioteca", "Salón", "Estudio"] }
         ];
 
         const tbody = document.getElementById('main-board');
@@ -110,8 +110,10 @@
                 let row = document.createElement('tr');
                 let rowHTML = `<td class="item-name">${item}</td>`;
                 
+                // Columna de Resolución
                 rowHTML += `<td class="res-col"><button class="cell-btn st-none" onclick="cycle(this)">?</button></td>`;
                 
+                // Columnas de jugadores
                 for (let i = 0; i < 6; i++) {
                     rowHTML += `<td><button class="cell-btn st-none" onclick="cycle(this)">?</button></td>`;
                 }

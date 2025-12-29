@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cluedo Digital - Versión Final</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 5px; }
+        h2 { text-align: center; color: #ff4d4d; margin: 10px 0; font-size: 1.4em; text-transform: uppercase; }
+        
+        .container { overflow-x: auto; border-radius: 8px; border: 1px solid #333; }
+        table { width: 100%; border-collapse: collapse; background: #1e1e1e; min-width: 550px; }
+        
+        th, td { border: 1px solid #333; padding: 6px 2px; text-align: center; }
+        th { background-color: #2c3e50; color: white; font-size: 0.7em; }
+        
+        .item-name { 
+            text-align: left; font-weight: bold; width: 110px; 
+            background: #252525; position: sticky; left: 0; 
+            z-index: 3; border-right: 2px solid #444; padding-left: 8px;
+            font-size: 0.85em;
+        }
+        
+        .res-col { 
+            background-color: #2d3436; 
+            border-right: 2px solid #f1c40f !important;
+            width: 50px;
+        }
+
+        .player-input { 
+            width: 40px; background: #34495e; border: 1px solid #555; 
+            color: white; text-align: center; font-weight: bold; 
+            border-radius: 4px; padding: 4px 0; font-size: 0.8em;
+        }
+
+        .cell-btn {
+            width: 32px; height: 32px; border-radius: 4px; border: 1px solid #444;
+            font-weight: bold; cursor: pointer; transition: 0.1s; font-size: 0.9em;
+        }
+        .st-none { background: #333; color: #555; }
+        .st-no { background: #c0392b; color: white; } 
+        .st-has { background: #27ae60; color: white; } 
+        .st-sol { background: #f1c40f; color: black; box-shadow: 0 0 5px #f1c40f; }
+
+        .section-header { 
+            background: #3a3a3a !important; font-weight: bold; 
+            text-align: left; padding-left: 10px; color: #ff4d4d; 
+            font-size: 0.8em; letter-spacing: 1px;
+        }
+        
+        .notes-area { width: 100%; margin-top: 15px; background: #1e1e1e; border-radius: 8px; padding: 10px; box-sizing: border-box; }
+        textarea { 
+            width: 100%; background: #121212; color: #2ecc71; border: 1px solid #444; 
+            padding: 8px; border-radius: 4px; resize: vertical; font-family: monospace; 
+            box-sizing: border-box; font-size: 0.9em;
+        }
+        
+        .reset-btn { 
+            width: 100%; padding: 12px; background: #e74c3c; color: white; 
+            border: none; border-radius: 8px; font-weight: bold; margin-top: 15px; 
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>🕵️ CLUEDO DIGITAL</h2>
+
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="item-name">CARTAS</th>
+                    <th class="res-col">SOL.</th>
+                    <th><input type="text" class="player-input" placeholder="Yo"></th>
+                    <th><input type="text" class="player-input" placeholder="P2"></th>
+                    <th><input type="text" class="player-input" placeholder="P3"></th>
+                    <th><input type="text" class="player-input" placeholder="P4"></th>
+                    <th><input type="text" class="player-input" placeholder="P5"></th>
+                    <th><input type="text" class="player-input" placeholder="P6"></th>
+                </tr>
+            </thead>
+            <tbody id="main-board">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="notes-area">
+        <label style="display:block; margin-bottom: 5px; font-size: 0.85em; color: #999;">📝 REGISTRO DE PISTAS:</label>
+        <textarea rows="3" placeholder="Ej: P2 no tiene el Puñal..."></textarea>
+    </div>
+
+    <button class="reset-btn" onclick="if(confirm('¿Reiniciar partida?')) window.location.reload()">REINICIAR TABLA</button>
+
+    <script>
+        const secciones = [
+            { nombre: "PERSONAJES", items: ["Prado", "Rubio", "Orquídea", "Celeste", "Mora", "Amapola"] },
+            { nombre: "ARMAS", items: ["Candelabro", "Cuerda", "Puñal", "Pistola", "Tubería", "Herramienta"] },
+            { nombre: "LUGARES", items: ["Sala de Baile", "Sala de Billar", "Invernadero", "Comedor", "Vestíbulo", "Cocina", "Biblioteca", "Salón", "Estudio"] }
+        ];
+
+        const tbody = document.getElementById('main-board');
+
+        secciones.forEach(sec => {
+            let headerRow = document.createElement('tr');
+            headerRow.innerHTML = `<td colspan="9" class="section-header">${sec.nombre}</td>`;
+            tbody.appendChild(headerRow);
+
+            sec.items.forEach(item => {
+                let row = document.createElement('tr');
+                let rowHTML = `<td class="item-name">${item}</td>`;
+                
+                // Columna de Resolución
+                rowHTML += `<td class="res-col"><button class="cell-btn st-none" onclick="cycle(this)">?</button></td>`;
+                
+                // Columnas de jugadores
+                for (let i = 0; i < 6; i++) {
+                    rowHTML += `<td><button class="cell-btn st-none" onclick="cycle(this)">?</button></td>`;
+                }
+                
+                row.innerHTML = rowHTML;
+                tbody.appendChild(row);
+            });
+        });
+
+        function cycle(btn) {
+            if (btn.innerText === "?") {
+                btn.innerText = "X";
+                btn.className = "cell-btn st-no";
+            } else if (btn.innerText === "X") {
+                btn.innerText = "✓";
+                btn.className = "cell-btn st-has";
+            } else if (btn.innerText === "✓") {
+                btn.innerText = "!";
+                btn.className = "cell-btn st-sol";
+            } else {
+                btn.innerText = "?";
+                btn.className = "cell-btn st-none";
+            }
+        }
+    </script>
+</body>
+</html>
